@@ -8,7 +8,7 @@ My project is a database of dragons across the world, showing the blurry line be
 
 Layers include:
 <ul>
-  <li>Editable <a href = "">dragon feature layer</a> created by me.</li>
+  <li>(Planned) Editable <a href="https://uw-mad.maps.arcgis.com/home/item.html?id=f47e7050426e45a48df22e0c9f5410fd">dragon feature layer</a> created by me.</li>
   <li><a href="https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/GlobalTerrRaR_025deg/FeatureServer">Global Terrsetial Species Richness and Rarity Patterns (0.25 degree)</a> by Map of Life on the Living Atlas.</li>
   <li><a href="https://cumulus.tnc.org/arcgis/rest/services/Atlas/TerrestrialMaps/MapServer/9 ">Number of Terrestrial Land and Snake Species</a> by tboucher</a> on The Living Atlas.</li>
   <li>Basemap: <a href="https://www.arcgis.com/home/item.html?id=83ebb96f9f99446085888bb5341c5afd">Georgian Web Map</a> created by j_nelson.</li>
