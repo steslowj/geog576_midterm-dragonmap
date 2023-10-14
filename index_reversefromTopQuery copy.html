@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="description" content="UW-Madison Geog 576 Midterm Project" />
+    <meta name="author" content="Jessica Steslow" />
+
+    <title>Dragon Map</title>
+    <link rel="icon" type="image/x-icon" href="dragon.png" />
+
+    <script type="module" src="https://js.arcgis.com/calcite-components/1.4.2/calcite.esm.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.4.2/calcite.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/dark/main.css" />
+    <script src="https://js.arcgis.com/4.27/"></script>
+    <!-- This code uses ESRI's sample for Query Top Features as a guide -->
+    <!-- https://developers.arcgis.com/javascript/latest/sample-code/featurelayer-query/ -->
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #infoDiv {
+        padding: 6px;
+        width: 370px;
+        height: 97%;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        --calcite-ui-brand: #71c96e;
+        --calcite-ui-brand-hover: #67b564;
+      }
+
+      #resultsDiv {
+        overflow: auto;
+        display: none;
+      }
+    </style>
+
+    <script>
+      require([
+        "esri/config",
+        "esri/Basemap",
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/Basemap"
+      ], (Map, MapView, FeatureLayer, Basemap) =>
+        (async () => {
+          // dark human geography basemap
+          const basemap = new Basemap({
+            portalItem: {
+              id: "4f2e99ba65e34bb8af49733d9778fb8e"
+            }
+          });
+
+          const map = new Map({
+            basemap
+          });
+        
+        const dragonLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/DragonDraft/FeatureServer",
+          outFields: ["*"],
+          title: "Dragons",
+          renderer: await setRenderer(),
+          popupTemplate: createPopupTemplate()
+        });
+        
+        map.add(dragonLayer);
+
+          const view = new MapView({
+            container: "viewDiv",
+            map: map,
+            center: [-97.75188, 37.23308],
+            zoom: 3,
+            padding: {
+              right: 380
+            }
+          });
+          const dragonLayerView = await view.whenLayerView(dragonLayer);
+
+          // get UI components involved in query
+          const dragonSelection = document.getElementById("dragonSelection");
+          const clearQueryButton = document.getElementById("clear-query");
+          const queryDragonsButton = document.getElementById("query-dragons");
+
+          // This function runs when user clicks on query dragons button
+          document.getElementById("query-dragons").addEventListener("click", async () => {
+            clearQueryButton.appearance = "outline";
+            queryDragonsButton.appearance = "solid";
+
+            // query all features from the layer and only return
+            // attributes specified in outFields.
+            const query = { // autocasts as Query
+              where: "Category = '" + dragonSelection.value + "'", //SQL query
+              returnGeometry: true,
+              outFields: ["Name", "Category", "Description", "OBJECTID"],
+              orderByFields: ["Name"]
+            };
+
+            const results = await dragonLayer.queryFeatures(query);
+
+            document.getElementById("resultsDiv").style.display = "block";
+            document.getElementById("resultsHeading").innerHTML = `Results: ${results.features.length} dragons`;
+            document.getElementById("results").innerHTML = "";
+
+            graphics = results.features;
+            graphics.forEach((result, index) => {
+              const attributes = result.attributes;
+              const item = document.createElement("calcite-pick-list-item");
+              item.setAttribute("label", attributes.Name);
+              item.setAttribute("value", index);
+
+              item.setAttribute("description", attributes.Description);
+              item.addEventListener("click", dragonResultClickHandler);
+              document.getElementById("results").appendChild(item);
+            });
+
+            // set query for the queryObjectIds.
+            query.orderByFields = [""];
+            const objectIds = await dragonLayer.queryObjectIds(query);
+            dragonLayerView.filter = {
+              objectIds
+            };
+
+          });
+
+          // this function runs when user clicks on the dragon
+          // in the list shown on the right side of the app
+          function dragonResultClickHandler(event) {
+            const target = event.target;
+            const resultId = target.getAttribute("value");
+
+            // get the graphic corresponding to the clicked zip code
+            const result = resultId && graphics && graphics[parseInt(resultId)];
+
+            if (result) {
+              view.openPopup({
+                features: [result],
+                location: result.geometry
+              });
+            }
+          }
+
+          clearQueryButton.addEventListener("click", () => {
+            clearQueryButton.appearance = "solid";
+            queryDragonsButton.appearance = "outline";
+            dragonLayerView.filter = null;
+            view.closePopup();
+            document.getElementById("resultsHeading").innerHTML = `Results`;
+            document.getElementById("results").innerHTML = "";
+          });
+
+          async function setRenderer() {
+             let dragonRenderer = {
+              type: "unique-value", // autocasts as new UniqueValueRenderer()
+              field: "Category",
+              defaultSymbol: { type: "simple-marker"}, // autocasts as new SimpleMarkerSymbol()
+              uniqueValueInfos: [{
+                value: "Legend",
+                symbol: {
+                  type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+                  color: [ 255, 128, 0, 0.5 ],
+                  outline: {  // autocasts as new SimpleLineSymbol()
+                    width: 1,
+                    color: "black"
+                  }
+                }
+              }, {
+                value: "Zoology",
+                symbol: {
+                  type: "simple-marker",  // autocasts as new SimpleFillSymbol()
+                  color: [ 128, 255, 0, 0.5 ],
+                  outline: {  // autocasts as new SimpleLineSymbol()
+                    width: 1,
+                    color: "black"
+                  }
+                }
+              }]
+            };
+
+            return dragonRenderer;
+          }
+
+          function createPopupTemplate() {
+            return {
+              title: "{Dragon}",
+              content: [
+                {
+                  type: "fields",
+                  fieldInfos: [
+                    {
+                      fieldName: "Name",
+                      label: "Name"
+                    },
+                    {
+                      fieldName: "Category",
+                      label: "Category"
+                    },
+                    {
+                      fieldName: "Description",
+                      label: "Description"
+                    }
+                  ]
+                }
+              ]
+            };
+          }
+        })());
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <calcite-panel id="infoDiv" class="calcite-mode-dark">
+      <h3 class="heading" slot="header-content">Choose a category</h3>
+      <div id="content" style="padding: 5px">
+        <calcite-segmented-control id="dragonSelection" layout="horizontal">
+          <calcite-segmented-control-item value="Legend" checked> Legend </calcite-segmented-control-item>
+          <calcite-segmented-control-item value="Zoology"> Zoology </calcite-segmented-control-item>
+        </calcite-segmented-control>
+        <br />
+        <div style="width: 360px; max-width: 100%; display: flex; flex-direction: row">
+          <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
+            Query Dragons
+          </calcite-button>
+          <calcite-button id="clear-query" width="half" appearance="outline" alignment="center" scale="s">
+            Clear query
+          </calcite-button>
+        </div>
+        <br />
+      </div>
+      <calcite-panel id="resultsDiv">
+        <h3 class="heading" id="resultsHeading" slot="header-content">Results</h3>
+        <div id="results"></div>
+      </calcite-panel>
+    </calcite-panel>
+  </body>
+</html>
