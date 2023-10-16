@@ -219,16 +219,22 @@
       });
 
       view.ui.move("zoom", "top-right");
-
+      
+      // Add a legend instance to the panel of a
+      // ListItem in a LayerList instance
       const layerList = new LayerList({
-        view,
-        selectionEnabled: true,
-        container: "layers-container"
-      });
-
-      const legend = new Legend({
-        view,
-        container: "layers-container"
+        view: view,
+        container: "layers-container",
+        listItemCreatedFunction: (event) => {
+          const item = event.item;
+          if (item.layer.type != "group") {
+            // don't show legend twice
+            item.panel = {
+              content: "legend",
+              open: true
+            };
+          }
+        }
       });
 
       // function to manage calcite items after view has finished loading
