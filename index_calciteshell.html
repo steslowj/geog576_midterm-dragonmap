@@ -1,0 +1,256 @@
+<html>
+  <head>
+    <!-- working version following calcite tutorial-->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="description" content="UW-Madison Geog 576 Midterm Project" />
+    <meta name="author" content="Jessica Steslow" />
+    
+    <title>Dragon Map</title>
+    <link rel="icon" type="image/x-icon" href="dragon.png" />
+
+    <script src="https://js.arcgis.com/calcite-components/1.9.2/calcite.esm.js" type="module"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/1.9.2/calcite.css" />
+
+    <script src="https://js.arcgis.com/4.27/"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/dark/main.css" />
+  </head>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      display: flex;
+    }
+
+    calcite-loader {
+      align-self: center;
+      justify-self: center;
+    }
+
+    #header-title {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+
+    #info-content {
+      padding: 0.75rem;
+      --calcite-ui-brand: #71c96e;
+      --calcite-ui-brand-hover: #67b564;
+    }
+
+    calcite-rating {
+      margin-top: 0.25rem;
+    }
+
+  </style>
+
+  <body>
+    
+    <calcite-shell content-behind class="calcite-mode-dark">
+      <h2 id="header-title" slot="header">
+        Dragon Map
+      </h2>
+      <!-- Calcite Shell Panel to organize UI -->
+      <calcite-shell-panel slot="panel-start" display-mode="float">
+        <calcite-action-bar slot="action-bar">
+          <calcite-action data-action-id="queryAttributes" icon="search" text="Search by Attributes"></calcite-action>
+          <calcite-action data-action-id="layers" icon="layers" text="Layers"></calcite-action>
+          <calcite-action data-action-id="legend" icon="legend" text="Legend"></calcite-action>
+          <calcite-action data-action-id="information" icon="information" text="Information"></calcite-action>
+        </calcite-action-bar>
+
+        <!-- Map-specific panels (each one provides a div for a ArcGIS Maps SDK for JavaScript widget) -->
+        <calcite-panel heading="Layers" height-scale="l" data-panel-id="layers" hidden>
+          <div id="layers-container"></div>
+        </calcite-panel>
+        <calcite-panel heading="Legend" height-scale="l" data-panel-id="legend" hidden>
+          <div id="legend-container"></div>
+        </calcite-panel>
+
+        <!-- Info panel -->
+        <calcite-panel heading="About the Dragon Map" data-panel-id="information" hidden>
+          <div id="info-content">
+            Use the tools on the left to explore the dragon dataset.</br></br>
+            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>
+          </div>
+        </calcite-panel>
+
+        <!-- queryAttributes panel -->
+        <calcite-panel heading="Search the Dragon Database" data-panel-id="queryAttributes" hidden>
+          <div id="info-content" style="padding: 5px; width: 330px; max-width: 100%;">
+            <calcite-segmented-control id="categorySelection" layout="horizontal" width="full">
+              <calcite-segmented-control-item value="= 'Legend'"> Mythology </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="= 'Zoology'"> Zoology </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="LIKE '%'" checked> Either </calcite-segmented-control-item>
+            </calcite-segmented-control>
+            <br />
+            <calcite-segmented-control id="wingSelection" layout="horizontal" width="full">
+              <calcite-segmented-control-item value="Wings"> Wings </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="No Wings"> No Wings </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Either" checked> Either </calcite-segmented-control-item>
+            </calcite-segmented-control>
+            <br />
+            <div style="display: flex; flex-direction: row;">
+              <div style="flex-direction: column; margin: auto;">
+                <label>
+                  Number of heads:
+                  <calcite-select id="headSelection" scale="s" width="auto">
+                    <calcite-option label="Any" value="Any"></calcite-option>
+                    <calcite-option label="1" value="1"></calcite-option>
+                    <calcite-option label="2" value="2"></calcite-option>
+                    <calcite-option label="3+" value="3"></calcite-option>
+                  </calcite-select> </label> </div>
+              <div style="flex-direction:column; margin:auto;">
+                <label>
+                  Number of limbs:
+                  <calcite-select id="limbSelection" scale="s" width="auto">
+                    <calcite-option label="Any" value="Any"></calcite-option>
+                    <calcite-option label="0" value="0"></calcite-option>
+                    <calcite-option label="2" value="2"></calcite-option>
+                    <calcite-option label="4" value="4"></calcite-option>
+                    <calcite-option label="6+" value="6"></calcite-option>
+                  </calcite-select> </label> </div>
+            </div> <br />
+            <div style="width: 330px; max-width: 100%; display: flex; flex-direction: row">
+              <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
+                Query Dragons
+              </calcite-button>
+              <calcite-button id="clear-query" width="half" appearance="outline" alignment="center" scale="s">
+                Clear query
+              </calcite-button>
+            </div>
+            <br />
+          </div>
+          <calcite-panel id="resultsDiv">
+            <h3 class="heading" id="resultsHeading" slot="header-content" style="padding: 0px; margin: 0px;">Results</h3>
+            <div id="results"></div>
+          </calcite-panel>
+        </calcite-panel>
+
+
+      </calcite-shell-panel>
+      <div id="viewDiv"></div>
+    </calcite-shell>
+  </body>
+  <script>
+    require([
+      "esri/config",
+      "esri/Basemap",
+      "esri/Map",   
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/LayerList",
+      "esri/widgets/Legend",
+      "esri/widgets/Slider"
+    ], function(esriConfig, Basemap, Map, MapView, FeatureLayer, LayerList, Legend, Slider) {
+
+      // Georgian Basemap created by j_nelson
+      const basemap = new Basemap({
+        portalItem: {
+          id: "83ebb96f9f99446085888bb5341c5afd"
+        }
+      });
+
+      const map = new Map({
+        basemap
+      });
+      
+      const numberTerrestrialLayer = new FeatureLayer({
+        url: "https://cumulus.tnc.org/arcgis/rest/services/Atlas/TerrestrialMaps/MapServer/9",
+        outFields: ["*"],
+        title: "Number of Terrestrial Lizard and Snake Species",
+        visible: false
+      });
+
+      const speciesRarityAndRichnessLayer = new FeatureLayer({
+        url: "https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/GlobalTerrRaR_025deg/FeatureServer",
+        outFields: ["*"],
+        title: "Terrestrial Species Rarity and Richness",
+        visible: false
+      });
+
+      const dragonLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/DragonDraft/FeatureServer",
+        outFields: ["*"],
+        title: "Dragons",
+        //renderer: await setRenderer(),
+        //popupTemplate: createPopupTemplate()
+      });
+
+      map.add(numberTerrestrialLayer);
+      map.add(speciesRarityAndRichnessLayer);
+      map.add(dragonLayer);
+
+      const view = new MapView({
+        map,
+        container: "viewDiv",
+        center: [-98, 37],
+        zoom: 3,
+        padding: {
+          left: 49
+        }
+      });
+
+      view.ui.move("zoom", "top-right");
+
+      const layerList = new LayerList({
+        view,
+        selectionEnabled: true,
+        container: "layers-container"
+      });
+
+      const legend = new Legend({
+        view,
+        container: "legend-container"
+      });
+
+      // function to manage calcite items after view has finished loading
+      view.when(() => {
+
+        let activeWidget;
+
+        const handleActionBarClick = ({ target }) => {
+          if (target.tagName !== "CALCITE-ACTION") {
+            return;
+          }
+
+          if (activeWidget) {
+            document.querySelector(`[data-action-id=${activeWidget}]`).active = false;
+            document.querySelector(`[data-panel-id=${activeWidget}]`).hidden = true;
+          }
+
+          const nextWidget = target.dataset.actionId;
+          if (nextWidget !== activeWidget) {
+            document.querySelector(`[data-action-id=${nextWidget}]`).active = true;
+            document.querySelector(`[data-panel-id=${nextWidget}]`).hidden = false;
+            activeWidget = nextWidget;
+          } else {
+            activeWidget = null;
+          }
+        };
+
+        document.querySelector("calcite-action-bar").addEventListener("click", handleActionBarClick);
+
+        let actionBarExpanded = false;
+
+        document.addEventListener("calciteActionBarToggle", event => {
+          actionBarExpanded = !actionBarExpanded;
+          view.padding = {
+            left: actionBarExpanded ? 150 : 49
+          };
+        });
+
+        //document.querySelector("calcite-shell").hidden = false;
+        //document.querySelector("calcite-loader").hidden = true;
+
+      });
+    });
+  </script>
+</html>
