@@ -33,16 +33,23 @@
       align-self: center;
       justify-self: center;
     }
+    
+    calcite-shell-panel {
+      --calcite-shell-panel-min-width: 320px;
+      --calcite-ui-brand: #71c96e;
+      --calcite-ui-brand-hover: #67b564;
+    }
 
     #header-title {
       margin-left: 1rem;
       margin-right: 1rem;
     }
 
-    #info-content {
+    #queryAttributes-container {
       padding: 0.75rem;
-      --calcite-ui-brand: #71c96e;
-      --calcite-ui-brand-hover: #67b564;
+    }
+    #addDragon-container, #information-container {
+      padding: 0.75rem;      
     }
 
     calcite-rating {
@@ -53,17 +60,22 @@
 
   <body>
     
-    <calcite-shell content-behind class="calcite-mode-dark">
+    <calcite-shell content-behind class="calcite-mode-light">
       <h2 id="header-title" slot="header">
         Dragon Map
       </h2>
       <!-- Calcite Shell Panel to organize UI -->
       <calcite-shell-panel slot="panel-start" display-mode="float">
         <calcite-action-bar slot="action-bar">
-          <calcite-action data-action-id="queryAttributes" icon="search" text="Search by Attributes"></calcite-action>
-          <calcite-action data-action-id="layers" icon="layers" text="Layers"></calcite-action>
-          <calcite-action data-action-id="legend" icon="legend" text="Legend"></calcite-action>
-          <calcite-action data-action-id="information" icon="information" text="Information"></calcite-action>
+          <calcite-action-group>
+            <calcite-action data-action-id="queryAttributes" icon="search" text="Search by Attributes"></calcite-action>
+            <calcite-action data-action-id="layers" icon="layers" text="Layers"></calcite-action>
+            <calcite-action data-action-id="legend" icon="legend" text="Legend"></calcite-action>
+            <calcite-action data-action-id="addDragon" icon="plus" text="Submit a Dragon"></calcite-action>
+          </calcite-action-group>
+          <calcite-action-group slot="bottom-actions">
+            <calcite-action data-action-id="information" icon="information" text="Information"></calcite-action>
+          </calcite-action-group>
         </calcite-action-bar>
 
         <!-- Map-specific panels (each one provides a div for a ArcGIS Maps SDK for JavaScript widget) -->
@@ -73,10 +85,18 @@
         <calcite-panel heading="Legend" height-scale="l" data-panel-id="legend" hidden>
           <div id="legend-container"></div>
         </calcite-panel>
+        
+        <!-- Add a Dragon panel -->
+        <calcite-panel heading="Add a Dragon to the Database" data-panel-id="addDragon" hidden>
+          <div id="addDragon-container">
+            Submission Guidelines:</br></br>
+            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123. The quality of the database depends on the consistency of submissions. Please follow the guided survey with a submission.</br></br>
+          </div>
+        </calcite-panel>
 
         <!-- Info panel -->
         <calcite-panel heading="About the Dragon Map" data-panel-id="information" hidden>
-          <div id="info-content">
+          <div id="information-container">
             Use the tools on the left to explore the dragon dataset.</br></br>
             Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>
           </div>
@@ -84,17 +104,17 @@
 
         <!-- queryAttributes panel -->
         <calcite-panel heading="Search the Dragon Database" data-panel-id="queryAttributes" hidden>
-          <div id="info-content" style="padding: 5px; width: 330px; max-width: 100%;">
+          <div id="queryAttributes-container" style="padding: 5px; max-width: 100%;">
             <calcite-segmented-control id="categorySelection" layout="horizontal" width="full">
-              <calcite-segmented-control-item value="= 'Legend'"> Mythology </calcite-segmented-control-item>
-              <calcite-segmented-control-item value="= 'Zoology'"> Zoology </calcite-segmented-control-item>
-              <calcite-segmented-control-item value="LIKE '%'" checked> Either </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="= 'Legend'">Mythology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="= 'Zoology'">Zoology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="LIKE '%'" checked>Any</calcite-segmented-control-item>
             </calcite-segmented-control>
             <br />
             <calcite-segmented-control id="wingSelection" layout="horizontal" width="full">
-              <calcite-segmented-control-item value="Wings"> Wings </calcite-segmented-control-item>
-              <calcite-segmented-control-item value="No Wings"> No Wings </calcite-segmented-control-item>
-              <calcite-segmented-control-item value="Either" checked> Either </calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Wings">Wings</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="No Wings">No Wings</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Like '%'" checked>Any</calcite-segmented-control-item>
             </calcite-segmented-control>
             <br />
             <div style="display: flex; flex-direction: row;">
@@ -118,7 +138,7 @@
                     <calcite-option label="6+" value="6"></calcite-option>
                   </calcite-select> </label> </div>
             </div> <br />
-            <div style="width: 330px; max-width: 100%; display: flex; flex-direction: row">
+            <div style="max-width: 100%; display: flex; flex-direction: row">
               <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
                 Query Dragons
               </calcite-button>
@@ -208,7 +228,7 @@
 
       const legend = new Legend({
         view,
-        container: "legend-container"
+        container: "layers-container"
       });
 
       // function to manage calcite items after view has finished loading
