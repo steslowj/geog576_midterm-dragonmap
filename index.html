@@ -1,106 +1,212 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
+    <!-- working version following calcite tutorial-->
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <meta name="description" content="UW-Madison Geog 576 Midterm Project" />
     <meta name="author" content="Jessica Steslow" />
-
+    
     <title>Dragon Map</title>
     <link rel="icon" type="image/x-icon" href="dragon.png" />
 
-    <script type="module" src="https://js.arcgis.com/calcite-components/1.4.2/calcite.esm.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/1.4.2/calcite.css" />
-    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/dark/main.css" />
+    <script src="https://js.arcgis.com/calcite-components/1.9.2/calcite.esm.js" type="module"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/1.9.2/calcite.css" />
+
     <script src="https://js.arcgis.com/4.27/"></script>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/dark/main.css" />
+  </head>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    body {
+      display: flex;
+    }
+    calcite-loader {
+      align-self: center;
+      justify-self: center;
+    }
+    calcite-shell-panel {
+      --calcite-shell-panel-min-width: 320px;
+      --calcite-ui-brand: #71c96e;
+      --calcite-ui-brand-hover: #67b564;
+    }
+    #header-title {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+    #queryAttributes-container {
+      padding: 0.75rem;
+    }
+    #addDragon-container, #information-container, #credits-container {
+      padding: 0.75rem;      
+    }
+    #addDragon-container a {
+      color: white;
+    }
+    calcite-rating {
+      margin-top: 0.25rem;
+    }
+    #resultsDiv {
+      overflow: auto;
+    }
 
-    <style>
-      html,
-      body,
-      #viewDiv {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
+  </style>
 
-      #infoDiv {
-        padding: 6px;
-        width: 370px;
-        height: 97%;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        --calcite-ui-brand: #71c96e;
-        --calcite-ui-brand-hover: #67b564;
-      }
+  <body>
+    
+    <calcite-shell content-behind class="calcite-mode-dark">
+      <h2 id="header-title" slot="header">
+        Dragon Map
+      </h2>
+      <!-- Calcite Shell Panel to organize UI -->
+      <calcite-shell-panel slot="panel-start" display-mode="float">
+        <calcite-action-bar slot="action-bar">
+          <calcite-action-group>
+            <calcite-action data-action-id="information" icon="information" text="About"></calcite-action>
+            <calcite-action data-action-id="queryAttributes" icon="data-magnifying-glass" text="Search"></calcite-action>
+            <calcite-action data-action-id="layers" icon="layers" text="Layers"></calcite-action>
+          </calcite-action-group>
+          <calcite-action-group>
+            <calcite-action data-action-id="addDragon" icon="plus-circle" text="Add a Dragon"></calcite-action>
+          </calcite-action-group>
+          <calcite-action-group slot="bottom-actions">
+            <calcite-action data-action-id="credits" icon="users" text="Credits"></calcite-action>
+          </calcite-action-group>
+        </calcite-action-bar>
 
-      #resultsDiv {
-        overflow: auto;
-        display: none;
-      }
+        <!-- Map-specific panels (each one provides a div for a ArcGIS Maps SDK for JavaScript widget) -->
+        <calcite-panel heading="Layers" height-scale="l" data-panel-id="layers" hidden>
+          <div id="layers-container"></div>
+        </calcite-panel>
+        
+        <!-- Info panel -->
+        <calcite-panel heading="About" data-panel-id="information" hidden>
+          <div id="information-container">
+            This map is meant to a an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
+          <p>Use the tools on the left side panel to interact with the data on the map.</p>
+          <calcite-block collapsible heading="Search the Database">
+            Text text
+          </calcite-block>
+          <calcite-block collapsible heading="View Layers">
+            <div>div in a block</div>
+          </calcite-block>
+          <calcite-block collapsible heading="Add a Dragon"></calcite-block>
+          </div>
+        </calcite-panel>
+        
+        <!-- Add a Dragon panel -->
+        <calcite-panel heading="Add a Dragon" data-panel-id="addDragon" hidden>
+          <div id="addDragon-container">
+            Submission Guidelines:</br></br>
+            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123. The quality of the database depends on the consistency of submissions. Please follow the guided survey with a submission.</br></br>
+            <a href="https://arcg.is/1reu9q" target="blank">Add a Dragon Survey<a>
+          </div>
 
-      .addRecordBtn {
-        position: absolute;
-        z-index: 10;
-        top: 10px;
-        left: 100px;
-        background-color: #eefaff;
-        color: #2f4467;
-        padding: 8px 16px;
-        border: 1px solid #114265;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        text-decoration: none;
-        }
+        </calcite-panel>
 
-        .addRecordBtn:hover {
-          background-color: #6bc3e9;
-        }
+        <!-- Credit panel -->
+        <calcite-panel heading="Credits" data-panel-id="credits" hidden>
+          <div id="credits-container">
+            Use the tools on the left to explore the dragon dataset.</br></br>
+            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>
+          </div>
+        </calcite-panel>
 
-        #about {
-          padding: 10px;
-          background-color: #242424;
-          width: 300px;
-          color: white;
-        }
-    </style>
+        <!-- queryAttributes panel -->
+        <calcite-panel heading="Search the Database" data-panel-id="queryAttributes" hidden>
+          <calcite-block collapsible open heading="Search by Attributes" description="">
+            <calcite-icon scale="s" slot="icon" icon="search"></calcite-icon>
+          <div id="queryAttributes-container" style="padding: 5px; max-width: 100%;">
+            <calcite-segmented-control id="categorySelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
+              <calcite-segmented-control-item value="= 'Mythology'">Mythology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="= 'Zoology'">Zoology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="LIKE '%'" checked>Any</calcite-segmented-control-item>
+            </calcite-segmented-control>
+            <calcite-segmented-control id="wingSelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
+              <calcite-segmented-control-item value="Yes">Wings</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="No">No Wings</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Like '%'" checked>Any</calcite-segmented-control-item>
+            </calcite-segmented-control>
+            <div style="display: flex; flex-direction: row;">
+              <div style="flex-direction: column; margin: auto; ">
+                <label>
+                  Number of heads:
+                  <calcite-select id="headSelection" scale="s" width="auto">
+                    <calcite-option label="Any" value="Any"></calcite-option>
+                    <calcite-option label="1" value="1"></calcite-option>
+                    <calcite-option label="2" value="2"></calcite-option>
+                    <calcite-option label="3" value="3"></calcite-option>
+                    <calcite-option label="3+" value="3+"></calcite-option>
+                  </calcite-select> </label> </div>
+              <div style="flex-direction:column; margin:auto;">
+                <label>
+                  Number of limbs:
+                  <calcite-select id="limbSelection" scale="s" width="auto">
+                    <calcite-option label="Any" value="Any"></calcite-option>
+                    <calcite-option label="0" value="0"></calcite-option>
+                    <calcite-option label="2" value="2"></calcite-option>
+                    <calcite-option label="4" value="4"></calcite-option>
+                    <calcite-option label="4+" value="6"></calcite-option>
+                  </calcite-select> </label> </div>
+            </div>
+            <calcite-input-text placeholder="Enter a name (Optional)" style="margin: 0.8rem 0;"></calcite-input-text>
+            <div style="max-width: 100%; display: flex; flex-direction: row">
+              <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
+                Query Dragons
+              </calcite-button>
+              <calcite-button id="clear-query" width="half" appearance="outline" alignment="center" scale="s">
+                Clear query
+              </calcite-button>
+            </div>
+          </div>
+          </calcite-block>
+          <calcite-panel id="resultsDiv">
+            <h3 class="heading" id="resultsHeading" slot="header-content" style="padding: 0px; margin: 0px;">Results</h3>
+            <div id="results"></div>
+          </calcite-panel>
+        </calcite-panel>
 
-    <script>
-      require([
+      <!-- End of calcite items, div for map in viewDiv-->
+      </calcite-shell-panel>
+      <div id="viewDiv"></div>
+    </calcite-shell>
+  </body>
+
+  <script>
+    require([
       "esri/config",
       "esri/Basemap",
-      "esri/Map",
-      "esri/layers/FeatureLayer",
+      "esri/Map",   
       "esri/views/MapView",
-      "esri/views/layers/LayerView",
-      "esri/rest/support/Query",
+      "esri/layers/FeatureLayer",
       "esri/widgets/Expand",
       "esri/widgets/LayerList",
       "esri/widgets/Legend",
+      "esri/widgets/Search",
       "esri/widgets/Slider"
-    ], function(esriConfig, Basemap, Map, FeatureLayer, MapView, LayerView, Query, Expand, LayerList, Legend, Slider) {
+    ], (esriConfig, Basemap, Map, MapView, FeatureLayer, Expand, LayerList, Legend, Search, Slider) => 
+    
+    (async () => {
+      
+    //esriConfig.apiKey = "AAPK9c2d1c71e0c54fea8c41854d79e2bb2aRY4BboQbjkrg1gzIR4byHHAPQAnvnqnY0kwBUXQfbQGvJjGbV3it18SqxWbjCtON";
 
-      esriConfig.apiKey = "AAPK9c2d1c71e0c54fea8c41854d79e2bb2aRY4BboQbjkrg1gzIR4byHHAPQAnvnqnY0kwBUXQfbQGvJjGbV3it18SqxWbjCtON";
-
+      // Georgian Basemap created by j_nelson
       const basemap = new Basemap({
         portalItem: {
-          id: "83ebb96f9f99446085888bb5341c5afd" // Georgian Basemap created by j_nelson on The Living Atlas
+          id: "83ebb96f9f99446085888bb5341c5afd"
         }
       });
 
       const map = new Map({
         basemap
       });
-
-      const view = new MapView({
-        container: "viewDiv",
-        map: map,
-        center: [-70,40], // Longitude, latitude
-        zoom: 3
-      });
-
+      
       const numberTerrestrialLayer = new FeatureLayer({
         url: "https://cumulus.tnc.org/arcgis/rest/services/Atlas/TerrestrialMaps/MapServer/9",
         outFields: ["*"],
@@ -115,257 +221,254 @@
         visible: false
       });
 
+      // Test Feature Layer to test layout and query in this code
+      const dragonFeatureLayerTester = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/DragonDraft/FeatureServer",
+        outFields: ["*"],
+        title: "Dragons",
+        renderer: await setRenderer(),
+        popupTemplate: createPopupTemplate()
+      });
+
       map.add(numberTerrestrialLayer);
       map.add(speciesRarityAndRichnessLayer);
-
-      // renderer for dragon layer
-      let dragonRenderer = {
-        type: "unique-value", // autocasts as new UniqueValueRenderer()
-        field: "Category",
-        defaultSymbol: { type: "simple-marker"}, // autocasts as new SimpleMarkerSymbol()
-        uniqueValueInfos: [{
-          value: "Legend",
-          symbol: {
-            type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-            color: [ 255, 128, 0, 0.5 ],
-            outline: {  // autocasts as new SimpleLineSymbol()
-              width: 1,
-              color: "black"
-            }
-          }
-        }, {
-          value: "Zoology",
-          symbol: {
-            type: "simple-marker",  // autocasts as new SimpleFillSymbol()
-            color: [ 128, 255, 0, 0.5 ],
-            outline: {  // autocasts as new SimpleLineSymbol()
-              width: 1,
-              color: "black"
-            }
-          }
-        }]
-      };
-
-      // Add a feature layer to map with all features visible on client (no filter)
-      const featureLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/DragonDraft/FeatureServer",
+      //map.add(dragonFeatureLayerTester);
+      
+      const dragonLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/survey123_858ef0ef96d24c05973f1b8c29755f2b_results/FeatureServer",
+        outFields: ["name","category","description","wings","number_of_heads","number_of_limbs"],
         title: "Dragons",
-        outFields: ["*"],
-        renderer: dragonRenderer,
-        popupTemplate: {
-          title: "{Name}",
-          content: "Description: {Description}"
-        },
-        definitionExpression: "" //"1=0" for no values on load
+        renderer: await setRenderer(),
+        popupTemplate: createPopupTemplate()
       });
-      map.add(featureLayer);
+      map.add(dragonLayer);
 
-      // Create instructions in an about element, using Expand
-      const about = document.createElement("div");
-      about.id = "about";
-      about.innerHTML =
-        "Use the panel on the right to explore the dragon dataset.</br></br>Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>Use the tools on the left to change the layers on the map or view the legend.";
-
-      view.ui.add(new Expand({
-          expandIcon: "question",
-          expandTooltip: "About",
-          view: view,
-          content: about,
-        }), "top-left"
-      );
-
-      // Creates a legend element
-      const legend = new Expand({
-        content: new Legend({
-          view: view,
-          style: "card" // other styles include 'classic'
-        }),
-        view: view,
-        expanded: true,
-        expandIcon: "legend",
-        expandTooltip: "Legend"
-      });
-      view.ui.add(legend, "bottom-left");
-
-      // Create actions in the LayerList
-      async function defineActions(event) {
-        const item = event.item;
-
-        await item.layer.when();
-
-        // Defining parameters of the slider, in this case it's to modify layer opacity
-        const slider = new Slider({
-          min: 0,
-          max: 1,
-          precision: 2,
-          values: [1],
-          visibleElements: {
-            labels: true,
-            rangeLabels: true
-          }
-        });
-
-        item.panel = {
-          content: slider,
-          className: "esri-icon-sliders-horizontal",
-          title: "Change layer opacity"
+      const view = new MapView({
+        map,
+        container: "viewDiv",
+        center: [-98, 37],
+        zoom: 3,
+        padding: {
+          left: 49
         }
-
-        // Creating an event for moving the slider
-        slider.on("thumb-drag", (event) => {
-          const { value } = event;
-          item.layer.opacity = value;
-        })
-      };
-
-      // Creates the LayerList widget with associated actions
-      view.when(() => {
-        const layerList = new LayerList({
-          view: view,
-          listItemCreatedFunction: defineActions // Executes for each ListItem in the LayerList
-        });
-
-        // Creates the event listener for each action
-        layerList.on("trigger-action", (event) => {
-          // The layer is visible in the view at the time of the trigger
-          const visibleLayer = numberTerrestrialLayer.visible ? numberTerrestrialLayer : speciesRarityAndRichnessLayer;
-
-          // Capture the action id
-          const id = event.action.id;
-        });
-
-        //view.ui.add(layerList, "bottom-left"); //adds the layerList as a static widget
-        view.ui.add(new Expand({ //adds the layerList as a widget embedded in Expand widget
-            expandIcon: "layers",
-            expandTooltip: "Layers",
-            view: view,
-            content: layerList,
-          }), "top-left"
-        );
-
       });
 
-      //const layerView = await view.whenLayerView(featureLayer);
+      const searchWidget = new Search({
+        view: view
+      });
+            
+      const searchExpand = new Expand({
+        expandIcon: "search",  // see https://developers.arcgis.com/calcite-design-system/icons/
+        expandTooltip: "Search map by location", // optional, defaults to "Expand" for English locale
+        view: view,
+        content: searchWidget
+      });
+      view.ui.add(searchExpand, {
+        position: "top-right"
+      });
+      
+      view.ui.move("zoom", "top-right");
+      
+      // Add a legend instance to the panel of a
+      // ListItem in a LayerList instance
+      const layerList = new LayerList({
+        view: view,
+        container: "layers-container",
+        listItemCreatedFunction: (event) => {
+          const item = event.item;
+          if (item.layer.type != "group") {
+            // don't show legend twice
+            item.panel = {
+              content: "legend",
+              open: true
+            };
+          }
+        }
+      });
 
-      // Server-side filter to change definition expression of dragon layer
-      function setFeatureLayerFilter(expression) {
-        featureLayer.definitionExpression = expression;
-      }
+      // function to manage calcite items after view has finished loading
+      view.when(() => {
 
-      function setResultsPanel(expression) {
-        let query = featureLayer.createQuery();
-        query.where = expression;
-        query.outFields = [ "Name", "Category", "Description", "OBJECTID" ];
-        query.orderByFields = ["Name"];
-        query.returnGeometry = true;
+        let activeWidget;
 
-        featureLayer.queryFeatures(query)
-          .then(function(results){
-            document.getElementById("resultsDiv").style.display = "block"; // changes style of resultsDiv from display:none to display:block
-            document.getElementById("resultsHeading").innerHTML = `Results: ${results.features.length} Dragons`; // length of array of results
+        const handleActionBarClick = ({ target }) => {
+          if (target.tagName !== "CALCITE-ACTION") {
+            return;
+          }
+
+          if (activeWidget) {
+            document.querySelector(`[data-action-id=${activeWidget}]`).active = false;
+            document.querySelector(`[data-panel-id=${activeWidget}]`).hidden = true;
+          }
+
+          const nextWidget = target.dataset.actionId;
+          if (nextWidget !== activeWidget) {
+            document.querySelector(`[data-action-id=${nextWidget}]`).active = true;
+            document.querySelector(`[data-panel-id=${nextWidget}]`).hidden = false;
+            activeWidget = nextWidget;
+          } else {
+            activeWidget = null;
+          }
+        };
+
+        document.querySelector("calcite-action-bar").addEventListener("click", handleActionBarClick);
+
+        let actionBarExpanded = false;
+
+        document.addEventListener("calciteActionBarToggle", event => {
+          actionBarExpanded = !actionBarExpanded;
+          view.padding = {
+            left: actionBarExpanded ? 150 : 49
+          };
+        });
+
+        //document.querySelector("calcite-shell").hidden = false;
+        //document.querySelector("calcite-loader").hidden = true;
+
+      }); //end of calcite view.when
+      
+          const dragonLayerView = await view.whenLayerView(dragonLayer);
+
+          // get UI components involved in query
+          const categorySelection = document.getElementById("categorySelection");
+          const wingSelection = document.getElementById("wingSelection");
+          const headSelection = document.getElementById("headSelection");
+          const limbSelection = document.getElementById("limbSelection");
+          const clearQueryButton = document.getElementById("clear-query");
+          const queryDragonsButton = document.getElementById("query-dragons");
+
+          // This function runs when user clicks on query dragons button
+          document.getElementById("query-dragons").addEventListener("click", async () => {
+            clearQueryButton.appearance = "outline";
+            queryDragonsButton.appearance = "solid";
+
+            // query all features from the layer and only return
+            // attributes specified in outFields.
+            const query = { // autocasts as Query
+              where: "Category " + categorySelection.value + "", // SQL query
+              returnGeometry: true,
+              outFields: ["name", "category", "description", "objectid"],
+              orderByFields: ["name"]
+            };
+
+            const results = await dragonLayer.queryFeatures(query);
+
+            document.getElementById("resultsDiv").style.display = "block";
+            document.getElementById("resultsHeading").innerHTML = `Results: ${results.features.length} dragons`;
             document.getElementById("results").innerHTML = "";
 
-            // result to graphics in sidepanel from TopQuery Sample Code
             graphics = results.features;
             graphics.forEach((result, index) => {
               const attributes = result.attributes;
-              //console.log("for each, result.attribute: ", attributes); // works as expected
               const item = document.createElement("calcite-pick-list-item");
-              item.setAttribute("label", attributes.Name);
+              item.setAttribute("label", attributes.name);
               item.setAttribute("value", index);
 
-              item.setAttribute("description", attributes.Description);
+              item.setAttribute("description", attributes.description);
               item.addEventListener("click", dragonResultClickHandler);
               document.getElementById("results").appendChild(item);
-
-            }); // end of graphics.forEach 
-          }); // end of .then
-
-      } // end of setResultsPanel function
-
-      function dragonResultClickHandler(event) {
-        const target = event.target;
-        const resultId = target.getAttribute("value");
-        // get the graphic corresponding to the clicked ID
-        const result = resultId && graphics && graphics[parseInt(resultId)];
-
-          if (result) {
-            //console.log(result.geometry);
-            view.openPopup({
-              features: [result],
-              location: result.geometry
             });
-            view.popup.location = view.center;
+
+            // set query for the queryObjectIds.
+            query.orderByFields = [""];
+            const objectIds = await dragonLayer.queryObjectIds(query);
+            dragonLayerView.filter = {
+              objectIds
+            };
+
+          });
+
+          // this function runs when user clicks on the dragon
+          // in the list shown on the right side of the app
+          function dragonResultClickHandler(event) {
+            const target = event.target;
+            const resultId = target.getAttribute("value");
+
+            // get the graphic corresponding to the clicked zip code
+            const result = resultId && graphics && graphics[parseInt(resultId)];
+
+            if (result) {
+              view.openPopup({
+                features: [result],
+                location: result.geometry
+              });
+            }
           }
-        } // end of dragonResultClickHandler function
 
-      const dragonSelection = document.getElementById("dragonSelection");
+          clearQueryButton.addEventListener("click", () => {
+            clearQueryButton.appearance = "solid";
+            queryDragonsButton.appearance = "outline";
+            dragonLayerView.filter = null;
+            view.closePopup();
+            document.getElementById("resultsHeading").innerHTML = `Results`;
+            document.getElementById("results").innerHTML = "";
+          });
 
-      // Event listener on query-dragons element
-      document.getElementById("query-dragons").addEventListener("click", async () => {
-        console.log("query-dragons button pressed, selection value is: ", dragonSelection.value);
-        const filter = "Category = '" + dragonSelection.value + "'";
-        document.getElementById("query-dragons").appearance = "solid";
-        document.getElementById("clear-query").appearance = "outline";
-        setFeatureLayerFilter(filter);
-        setResultsPanel(filter);
+          async function setRenderer() {
+             let dragonRenderer = {
+              type: "unique-value", // autocasts as new UniqueValueRenderer()
+              field: "category",
+              //defaultSymbol: { type: "simple-marker"}, // autocasts as new SimpleMarkerSymbol()
+              uniqueValueInfos: [{
+                value: "Mythology",
+                symbol: {
+                  type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+                  color: [ 255, 128, 0, 0.8 ],
+                  outline: {  // autocasts as new SimpleLineSymbol()
+                    width: 1,
+                    color: "black"
+                  }
+                }
+              }, {
+                value: "Zoology",
+                symbol: {
+                  type: "simple-marker",  // autocasts as new SimpleFillSymbol()
+                  color: [ 128, 255, 0, 0.8 ],
+                  outline: {  // autocasts as new SimpleLineSymbol()
+                    width: 1,
+                    color: "black"
+                  }
+                }
+              }]
+            };
 
-      });
+            return dragonRenderer;
+          }
+
+          function createPopupTemplate() {
+            return {
+              title: "{name}",
+              content: [
+                {
+                  type: "fields",
+                  fieldInfos: [
+                    {
+                      fieldName: "category",
+                      label: "Category"
+                    },
+                    {
+                      fieldName: "description",
+                      label: "Description"
+                    },
+                    {
+                      fieldName: "wings",
+                      label: "Wings?"
+                    },
+                    {
+                      fieldName: "number_of_heads",
+                      label: "Number of heads"
+                    },
+                    {
+                      fieldName: "number_of_limbs",
+                      label: "Number of limbs"
+                    }
+                  ]
+                }
+              ]
+            };
+          }
 
       
-      // Event listener on clear-query element
-      document.getElementById("clear-query").addEventListener("click", function (event) {
-        console.log("clear-query button pressed");
-        setFeatureLayerFilter("");
-        view.closePopup();
-        document.getElementById("query-dragons").appearance = "outline";
-        document.getElementById("clear-query").appearance = "solid";
-        document.getElementById("resultsHeading").innerHTML = `Results`;
-        document.getElementById("results").innerHTML = "";
-      });
-
-      // Difficult to format infoDiv to minimize. Doesn't work well with Expand as is
-      //const queryExpand = new Expand({
-      //  view: view,
-      //  container: document.getElementById("infoDiv"),
-      //  expanded: true,
-      //  expandIcon: "configure",
-      //  expandTooltip: "Search Dragons"
-      //})
-
-      //view.ui.add(queryExpand, "top-right");
-
-    
-    }); // end of ESRI require & all ESRI code
-
+    })());
   </script>
-  </head>
-
-  <body>
-    <a href="https://arcg.is/1WfqOC" target="_blank" class="addRecordBtn">Add Record</a>
-    <div id="viewDiv"></div>
-    <calcite-panel id="infoDiv" class="calcite-mode-dark">
-      <h3 class="heading" slot="header-content">Choose a category</h3>
-      <div id="content" style="padding: 5px">
-        <calcite-segmented-control id="dragonSelection" layout="horizontal">
-          <calcite-segmented-control-item value="Legend" checked> Mythology </calcite-segmented-control-item>
-          <calcite-segmented-control-item value="Zoology"> Zoology </calcite-segmented-control-item>
-        </calcite-segmented-control>
-        <br />
-        <div style="width: 360px; max-width: 100%; display: flex; flex-direction: row">
-          <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
-            Query dragons
-          </calcite-button>
-          <calcite-button id="clear-query" width="half" appearance="outline" alignment="center" scale="s">
-            Clear query
-          </calcite-button>
-        </div>
-        <br />
-      </div>
-      <calcite-panel id="resultsDiv">
-        <h3 class="heading" id="resultsHeading" slot="header-content">Results</h3>
-        <div id="results"></div>
-      </calcite-panel>
-    </calcite-panel>
-  </body>
 </html>
