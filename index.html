@@ -44,7 +44,20 @@
       padding: 0.75rem;
     }
     #addDragon-container, #information-container, #credits-container {
-      padding: 0.75rem;      
+      padding: 0.75rem;
+      line-height: 1.2rem;
+    }
+    #side-panel-information h4 {
+      margin-bottom:0rem;
+      display: flex;
+      align-items: center;
+    }
+    #side-panel-information p {
+      margin-top: 0.5rem;
+      margin-left: 2rem;
+    }
+    #side-panel-information calcite-icon {
+      margin-right: 0.4rem;
     }
     #addDragon-container a {
       color: white;
@@ -88,15 +101,23 @@
         <!-- Info panel -->
         <calcite-panel heading="About" data-panel-id="information" hidden>
           <div id="information-container">
-            This map is meant to a an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
+            This map is meant to be an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
           <p>Use the tools on the left side panel to interact with the data on the map.</p>
-          <calcite-block collapsible heading="Search the Database">
+          <div id="side-panel-information">
+            <h4><calcite-icon icon="data-magnifying-glass"></calcite-icon> Search the Database</h4>
+              <p>Select attributes related to dragons to search the database. Results given will correspond to points on the map.</p>
+            <h4><calcite-icon icon="layers"></calcite-icon> View Layers</h4>
+              <p>Explore more layers related to reptile diversity!</p>
+            <h4><calcite-icon icon="plus-circle"></calcite-icon> Add a Dragon</h4>
+              <p>This project is made better by including knowledge from multiple backgrounds! Check this tool to read about how to add a new dragon into the database.</p>
+          </div>
+          <!-- <calcite-block collapsible heading="Search the Database">
             Text text
           </calcite-block>
           <calcite-block collapsible heading="View Layers">
             <div>div in a block</div>
           </calcite-block>
-          <calcite-block collapsible heading="Add a Dragon"></calcite-block>
+          <calcite-block collapsible heading="Add a Dragon"></calcite-block>   -->
           </div>
         </calcite-panel>
         
