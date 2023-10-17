@@ -39,6 +39,8 @@
     #header-title {
       margin-left: 1rem;
       margin-right: 1rem;
+      padding: 0 2.8rem;
+      margin: 0.2rem 0.2rem;
     }
     #queryAttributes-container {
       padding: 0.75rem;
@@ -145,14 +147,14 @@
             <calcite-icon scale="s" slot="icon" icon="search"></calcite-icon>
           <div id="queryAttributes-container" style="padding: 5px; max-width: 100%;">
             <calcite-segmented-control id="categorySelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
-              <calcite-segmented-control-item value="= 'Mythology'">Mythology</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="= 'Zoology'">Zoology</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="LIKE '%'" checked>Any</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Mythology">Mythology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Zoology">Zoology</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
             </calcite-segmented-control>
             <calcite-segmented-control id="wingSelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
               <calcite-segmented-control-item value="Yes">Wings</calcite-segmented-control-item>
               <calcite-segmented-control-item value="No">No Wings</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="Like '%'" checked>Any</calcite-segmented-control-item>
+              <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
             </calcite-segmented-control>
             <div style="display: flex; flex-direction: row;">
               <div style="flex-direction: column; margin: auto; ">
@@ -163,7 +165,7 @@
                     <calcite-option label="1" value="1"></calcite-option>
                     <calcite-option label="2" value="2"></calcite-option>
                     <calcite-option label="3" value="3"></calcite-option>
-                    <calcite-option label="3+" value="3+"></calcite-option>
+                    <calcite-option label="More than 3" value="More than 3"></calcite-option>
                   </calcite-select> </label> </div>
               <div style="flex-direction:column; margin:auto;">
                 <label>
@@ -173,10 +175,10 @@
                     <calcite-option label="0" value="0"></calcite-option>
                     <calcite-option label="2" value="2"></calcite-option>
                     <calcite-option label="4" value="4"></calcite-option>
-                    <calcite-option label="4+" value="6"></calcite-option>
+                    <calcite-option label="More than 4" value="More than 4"></calcite-option>
                   </calcite-select> </label> </div>
             </div>
-            <calcite-input-text placeholder="Enter a name (Optional)" style="margin: 0.8rem 0;"></calcite-input-text>
+            <calcite-input-text id="nameSelection" placeholder="Enter a name (optional)" style="margin: 0.8rem 0;"></calcite-input-text>
             <div style="max-width: 100%; display: flex; flex-direction: row">
               <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
                 Query Dragons
@@ -355,22 +357,66 @@
           const wingSelection = document.getElementById("wingSelection");
           const headSelection = document.getElementById("headSelection");
           const limbSelection = document.getElementById("limbSelection");
+          const nameSelection = document.getElementById("nameSelection");
           const clearQueryButton = document.getElementById("clear-query");
           const queryDragonsButton = document.getElementById("query-dragons");
+      
+
 
           // This function runs when user clicks on query dragons button
           document.getElementById("query-dragons").addEventListener("click", async () => {
             clearQueryButton.appearance = "outline";
             queryDragonsButton.appearance = "solid";
 
+            // Build the SQL queries based on selected attributes. Hard coded based on Feature Layer field names.
+            // Very sensitive to chosen values for calcite items in the DOM.
+            let categorySQL = "";
+            switch(categorySelection.value) {
+              case "Any":
+                categorySQL = "category LIKE '%'";
+                break;
+              default:
+                categorySQL = "category = '" + categorySelection.value + "'";
+            }
+            
+            let wingSQL = "";
+            switch(wingSelection.value) {
+              case "Any":
+                wingSQL = "wings LIKE '%'";
+                break;
+              default:
+                wingSQL = "wings = '" + wingSelection.value + "'";
+            }
+
+            let headSQL = "";
+            switch(headSelection.value) {
+              case "Any":
+                headSQL = "number_of_heads LIKE '%'";
+                break;
+              default:
+                headSQL = "number_of_heads = '" + headSelection.value + "'";
+            }
+            
+            let limbSQL = "";
+            switch(limbSelection.value) {
+              case "Any":
+                limbSQL = "number_of_limbs LIKE '%'";
+                break;
+              default:
+                limbSQL = "number_of_limbs = '" + limbSelection.value + "'";
+            }
+            
+            let nameSQL = "name LIKE '" + nameSelection.value + "'";            
+
             // query all features from the layer and only return
             // attributes specified in outFields.
             const query = { // autocasts as Query
-              where: "Category " + categorySelection.value + "", // SQL query
+              where: categorySQL + " AND " + wingSQL + " AND " + headSQL + " AND " + limbSQL + " AND " + nameSQL, // SQL query
               returnGeometry: true,
               outFields: ["name", "category", "description", "objectid"],
               orderByFields: ["name"]
             };
+            
 
             const results = await dragonLayer.queryFeatures(query);
 
