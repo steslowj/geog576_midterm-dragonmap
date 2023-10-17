@@ -57,7 +57,7 @@
 
   <body>
     
-    <calcite-shell content-behind class="calcite-mode-light">
+    <calcite-shell content-behind class="calcite-mode-dark">
       <h2 id="header-title" slot="header">
         Dragon Map
       </h2>
@@ -85,8 +85,15 @@
         <!-- Info panel -->
         <calcite-panel heading="About" data-panel-id="information" hidden>
           <div id="information-container">
-            Use the tools on the left to explore the dragon dataset.</br></br>
-            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>
+            This map is meant to a an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
+          <p>Use the tools on the left side panel to interact with the data on the map.</p>
+          <calcite-block collapsible heading="Search the Database">
+            Text text
+          </calcite-block>
+          <calcite-block collapsible heading="View Layers">
+            <div>div in a block</div>
+          </calcite-block>
+          <calcite-block collapsible heading="Add a Dragon"></calcite-block>
           </div>
         </calcite-panel>
         
@@ -96,6 +103,7 @@
             Submission Guidelines:</br></br>
             Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123. The quality of the database depends on the consistency of submissions. Please follow the guided survey with a submission.</br></br>
           </div>
+
         </calcite-panel>
 
         <!-- Credit panel -->
@@ -109,6 +117,7 @@
         <!-- queryAttributes panel -->
         <calcite-panel heading="Search the Database" data-panel-id="queryAttributes" hidden>
           <calcite-block collapsible open heading="Search by Attributes" description="">
+            <calcite-icon scale="s" slot="icon" icon="search"></calcite-icon>
           <div id="queryAttributes-container" style="padding: 5px; max-width: 100%;">
             <calcite-segmented-control id="categorySelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
               <calcite-segmented-control-item value="= 'Legend'">Mythology</calcite-segmented-control-item>
