@@ -4,7 +4,7 @@ A repo for UW-Mad Geog 576 Midterm Project
 ## Project Summary
 This project is a web map using ArcGIS Online JavaScript code to create a responsive web-map with JavaScript and various hosted datasources, incorporating an editable feature layer and a legend. 
 
-My project is a database of dragons across the world, showing the blurry line bewteen folklore, history, myth, and biology. I have included some data points for dragons as a starter to the database, but the intention for this website is to share with others to hopefully enrich the database from multiple perspectives, cultures, and backgrounds.
+My project is a database of dragons across the world, showing the blurry line between folklore, history, myth, and biology. I have included some data points for dragons as a starter to the database, but the intention for this website is to share with others to hopefully enrich the database from multiple perspectives, cultures, and backgrounds.
 
 Layers include:
 <ul>
