@@ -1,6 +1,5 @@
 <html>
   <head>
-    <!-- working version following calcite tutorial-->
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <meta name="description" content="UW-Madison Geog 576 Midterm Project" />
@@ -39,7 +38,7 @@
     #header-title {
       margin-left: 1rem;
       margin-right: 1rem;
-      padding: 0 2.8rem;
+      /*padding: 0 2.8rem;*/
       margin: 0.2rem 0.2rem;
     }
     #queryAttributes-container {
@@ -370,43 +369,22 @@
 
             // Build the SQL queries based on selected attributes. Hard coded based on Feature Layer field names.
             // Very sensitive to chosen values for calcite items in the DOM.
-            let categorySQL = "";
-            switch(categorySelection.value) {
-              case "Any":
-                categorySQL = "category LIKE '%'";
-                break;
-              default:
-                categorySQL = "category = '" + categorySelection.value + "'";
-            }
             
-            let wingSQL = "";
-            switch(wingSelection.value) {
-              case "Any":
-                wingSQL = "wings LIKE '%'";
-                break;
-              default:
-                wingSQL = "wings = '" + wingSelection.value + "'";
-            }
-
-            let headSQL = "";
-            switch(headSelection.value) {
-              case "Any":
-                headSQL = "number_of_heads LIKE '%'";
-                break;
-              default:
-                headSQL = "number_of_heads = '" + headSelection.value + "'";
-            }
+            let categorySQL = (categorySelection.value = "Any") ? 
+                "category LIKE '%'": "category = '" + categorySelection.value + "'"; 
             
-            let limbSQL = "";
-            switch(limbSelection.value) {
-              case "Any":
-                limbSQL = "number_of_limbs LIKE '%'";
-                break;
-              default:
-                limbSQL = "number_of_limbs = '" + limbSelection.value + "'";
-            }
+            let wingSQL = (wingSelection.value = "Any") ? 
+                "wings LIKE '%'": "wings = '" + wingSelection.value + "'"; 
             
-            let nameSQL = "name LIKE '" + nameSelection.value + "'";            
+            let headSQL = (headSelection.value = "Any") ? 
+                "number_of_heads LIKE '%'": "number_of_heads = '" + headSelection.value + "'"; 
+            
+            let limbSQL = (limbSelection.value = "Any") ? 
+                "number_of_limbs LIKE '%'": "number_of_limbs = '" + limbSelection.value + "'"; 
+            
+            
+            let nameSQL = "THe set of options if there is a value" ?? "name LIKE '%'"; 
+            "name LIKE '" + nameSelection.value + "'";            
 
             // query all features from the layer and only return
             // attributes specified in outFields.
