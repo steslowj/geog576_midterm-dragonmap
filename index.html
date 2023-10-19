@@ -44,6 +44,26 @@
     #queryAttributes-container {
       padding: 0.75rem;
     }
+    #queryAttributes-grid {
+      display: grid;
+      grid-template-columns: auto 230px;
+      grid-row-gap: 3px;
+      align-content: center;
+    }
+    #queryName-grid {
+      display: grid;
+      grid-template-columns: auto 240px;
+      align-content: center;
+      margin-top: 4px;
+      margin-bottom: 24px;
+    }
+    .attributeLabel {
+      font-size: 90%;
+      display: flex;
+      align-items: flex-end;
+      font-style: italic;
+    }
+
     #addDragon-container, #information-container, #credits-container {
       padding: 0.75rem;
       line-height: 1.2rem;
@@ -61,6 +81,9 @@
       margin-right: 0.4rem;
     }
     #addDragon-container a {
+      color: grey;
+    }
+    #addDragon-container a:hover {
       color: white;
     }
     calcite-rating {
@@ -145,40 +168,49 @@
           <calcite-block collapsible open heading="Search by Attributes" description="">
             <calcite-icon scale="s" slot="icon" icon="search"></calcite-icon>
           <div id="queryAttributes-container" style="padding: 5px; max-width: 100%;">
-            <calcite-segmented-control id="categorySelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
-              <calcite-segmented-control-item value="Mythology">Mythology</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="Zoology">Zoology</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
-            </calcite-segmented-control>
-            <calcite-segmented-control id="wingSelection" layout="horizontal" width="full" style="margin-bottom:0.4rem;">
-              <calcite-segmented-control-item value="Yes">Wings</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="No">No Wings</calcite-segmented-control-item>
-              <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
-            </calcite-segmented-control>
-            <div style="display: flex; flex-direction: row;">
-              <div style="flex-direction: column; margin: auto; ">
-                <label>
-                  Number of heads:
-                  <calcite-select id="headSelection" scale="s" width="auto">
-                    <calcite-option label="Any" value="Any"></calcite-option>
-                    <calcite-option label="1" value="1"></calcite-option>
-                    <calcite-option label="2" value="2"></calcite-option>
-                    <calcite-option label="3" value="3"></calcite-option>
-                    <calcite-option label="More than 3" value="More than 3"></calcite-option>
-                  </calcite-select> </label> </div>
-              <div style="flex-direction:column; margin:auto;">
-                <label>
-                  Number of limbs:
-                  <calcite-select id="limbSelection" scale="s" width="auto">
-                    <calcite-option label="Any" value="Any"></calcite-option>
-                    <calcite-option label="0" value="0"></calcite-option>
-                    <calcite-option label="2" value="2"></calcite-option>
-                    <calcite-option label="4" value="4"></calcite-option>
-                    <calcite-option label="More than 4" value="More than 4"></calcite-option>
-                  </calcite-select> </label> </div>
+            <div id="queryAttributes-grid">
+              <div class="attributeLabel">Category</div>
+              <div>
+                <calcite-segmented-control id="categorySelection" layout="horizontal" width="full">
+                  <calcite-segmented-control-item value="Mythology">Mythology</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="Zoology">Zoology</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
+                </calcite-segmented-control>
+              </div>
+              <div class="attributeLabel">Wings</div>
+              <div>
+                <calcite-segmented-control id="wingSelection" layout="horizontal" width="full">
+                  <calcite-segmented-control-item value="Yes">Wings</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="No">No Wings</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
+                </calcite-segmented-control>
+              </div>
+              <div class="attributeLabel"># Heads</div>
+              <div>
+                <calcite-segmented-control id="headSelection" layout="horizontal" width="full">
+                  <calcite-segmented-control-item value="1">1</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="2">2</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="3">3</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="More than 3">>3</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
+                </calcite-segmented-control>
+              </div>
+              <div class="attributeLabel"># Limbs</div>
+              <div>
+                <calcite-segmented-control id="limbSelection" layout="horizontal" width="full">
+                  <calcite-segmented-control-item value="0">0</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="2">2</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="4">4</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="More than 4">>4</calcite-segmented-control-item>
+                  <calcite-segmented-control-item value="Any" checked>Any</calcite-segmented-control-item>
+                </calcite-segmented-control>
+              </div>
             </div>
-            <calcite-input-text id="nameSelection" placeholder="Enter a name (optional)" style="margin: 0.8rem 0;"></calcite-input-text>
-            <div style="max-width: 100%; display: flex; flex-direction: row">
+            <div id="queryName-grid">
+              <div class="attributeLabel" style="margin-left: 4px">Name</div>
+              <div><calcite-input-text id="nameSelection" placeholder="(optional)"></calcite-input-text></div>
+            </div>
+            <div style="max-width: 100%; display: flex; flex-direction: row;">
               <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
                 Query Dragons
               </calcite-button>
@@ -216,7 +248,7 @@
     
     (async () => {
       
-    esriConfig.apiKey = "AAPK9c2d1c71e0c54fea8c41854d79e2bb2aRY4BboQbjkrg1gzIR4byHHAPQAnvnqnY0kwBUXQfbQGvJjGbV3it18SqxWbjCtON";
+    //esriConfig.apiKey = "AAPK9c2d1c71e0c54fea8c41854d79e2bb2aRY4BboQbjkrg1gzIR4byHHAPQAnvnqnY0kwBUXQfbQGvJjGbV3it18SqxWbjCtON";
 
       // Georgian Basemap created by j_nelson
       const basemap = new Basemap({
