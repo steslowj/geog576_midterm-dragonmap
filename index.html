@@ -324,6 +324,8 @@
         visible: false
       });
 
+      // The url feature layer contains many fields, I create two feature layers from a smaller
+      // set of outFields. Both my generated layers use bivariate symbology
       const amphibianRichnessAndRarityLayer = new FeatureLayer({
         url: "https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/GlobalTerrRaR_025deg/FeatureServer",
         outFields: ["Rich_amph", "Rar_amph"],
@@ -338,6 +340,7 @@
         visible: false
       });
       
+      // This feature layer will incorporate query, update, and popup capabilities
       const dragonLayer = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/survey123_858ef0ef96d24c05973f1b8c29755f2b_results/FeatureServer",
         outFields: ["name","category","description","wings","number_of_heads","number_of_limbs"],
@@ -349,7 +352,7 @@
       const view = new MapView({
         map,
         container: "viewDiv",
-        center: [-98, 37],
+        center: [18, 44],
         zoom: 3,
         padding: {
           left: 49
@@ -357,12 +360,16 @@
       });
       
       // Returns the Blueberry Parfait scheme
+      // Very hard to find scheme names online and
+      // Very tedious to generate a color scheme or manually write one
       let blueberryScheme = relationshipSchemes.getSchemeByName({
         basemap: map.basemap,
         geometryType: "polygon",
         name: "Blueberry Parfait"
       });
       
+      // parameters for relationship renderer for bivariate analysis
+      // Using blueberry color scheme
       const amphibianRichnessAndRarityParams = {
         layer: amphibianRichnessAndRarityLayer,
         view: view,
@@ -376,11 +383,14 @@
         relationshipScheme: blueberryScheme
       }
       
+      // bivariate relationship requires a promise response to create the renderer
       relationshipRendererCreator.createRenderer(amphibianRichnessAndRarityParams)
         .then(function(response){
           amphibianRichnessAndRarityLayer.renderer = response.renderer;
       });
       
+      // Repeating bivariate analysis for reptile information
+      // Data comes from the same parent feature layer
       const reptileRichnessAndRarityParams = {
         layer: reptileRichnessAndRarityLayer,
         view: view,
@@ -442,6 +452,7 @@
 
         let activeWidget;
 
+        // action bar is the most-left bar
         const handleActionBarClick = ({ target }) => {
           if (target.tagName !== "CALCITE-ACTION") {
             return;
@@ -473,11 +484,9 @@
           };
         });
 
-        //document.querySelector("calcite-shell").hidden = false;
-        //document.querySelector("calcite-loader").hidden = true;
-
       }); //end of calcite view.when
       
+          // Sets up functions to wait until after the dragonLayer is loaded
           const dragonLayerView = await view.whenLayerView(dragonLayer);
 
           // get UI components involved in query
@@ -587,6 +596,7 @@
             document.getElementById("results").innerHTML = "";
           });
 
+          // symbology for the dragon feature layer
           async function setRenderer() {
              let dragonRenderer = {
               type: "unique-value", // autocasts as new UniqueValueRenderer()
@@ -596,23 +606,24 @@
                 value: "Mythology",
                 symbol: {
                   type: "picture-marker",
-                  url: "https://steslowj.github.io/geog576_midterm/noun-dragon.png",
-                  width: "32px",
-                  height: "32px",
+                  url: "https://steslowj.github.io/geog576_midterm/dragon-icon-01.png",
+                  width: "40px",
+                  height: "40px",
                 }
               }, {
                 value: "Zoology",
                 symbol: {
                   type: "picture-marker",
-                  url: "https://steslowj.github.io/geog576_midterm/noun-lizard.png",
-                  width: "32px",
-                  height: "32px"
+                  url: "https://steslowj.github.io/geog576_midterm/lizard-icon-01.png",
+                  width: "40px",
+                  height: "40px"
                 }
               }]
             };
             return dragonRenderer;
           }
       
+          // creates the popup for each dragon feature
           function createPopupTemplate() {
             return {
               title: "{name}",
