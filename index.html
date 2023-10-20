@@ -5,9 +5,13 @@
     <meta name="description" content="UW-Madison Geog 576 Midterm Project" />
     <meta name="author" content="Jessica Steslow" />
     
-    <title>Dragon Map</title>
+    <title>The Dragon Map</title>
     <link rel="icon" type="image/x-icon" href="dragon.png" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+    
     <script src="https://js.arcgis.com/calcite-components/1.9.2/calcite.esm.js" type="module"></script>
     <link rel="stylesheet" href="https://js.arcgis.com/calcite-components/1.9.2/calcite.css" />
 
@@ -26,33 +30,41 @@
     body {
       display: flex;
     }
-    calcite-loader {
-      align-self: center;
-      justify-self: center;
-    }
     calcite-shell-panel {
       --calcite-shell-panel-min-width: 320px;
       --calcite-ui-brand: #71c96e;
       --calcite-ui-brand-hover: #67b564;
     }
     #header-title {
-      margin-left: 1rem;
-      margin-right: 1rem;
-      padding: 0 2.8rem;
-      margin: 0.2rem 0.2rem;
+      padding: 0 1rem;
+      margin: 0.4rem 0.4rem;
+      font-family: 'IM Fell DW Pica', serif;
+    }
+    @media screen and (max-width: 600px) {
+      #header-title {
+        font-size: 1.1rem;
+        padding: 0 0.2rem;
+      }
+    }
+    @media screen and (min-width: 992px) {
+      #header-title {
+        font-size: 1.8rem;
+        padding: 0.4rem 1rem;
+        text-align: center;
+      }
     }
     #queryAttributes-container {
       padding: 0.75rem;
     }
     #queryAttributes-grid {
       display: grid;
-      grid-template-columns: auto 230px;
+      grid-template-columns: auto 80%;
       grid-row-gap: 3px;
       align-content: center;
     }
     #queryName-grid {
       display: grid;
-      grid-template-columns: auto 240px;
+      grid-template-columns: auto 82%;
       align-content: center;
       margin-top: 4px;
       margin-bottom: 18px;
@@ -62,6 +74,9 @@
       display: flex;
       align-items: flex-end;
       font-style: italic;
+    }
+    .esri-feature__last-edited-info {
+      display: none;
     }
 
     #information-container, #layer-reference-container, #addDragon-container, #credits-container {
@@ -80,11 +95,17 @@
     #side-panel-information calcite-icon {
       margin-right: 0.4rem;
     }
-    #addDragon-container a {
-      color: grey;
+    #credits-container a {
+      color: #71c96e;
     }
-    #addDragon-container a:hover {
-      color: white;
+    #credits-container a:hover {
+      color: #67b564;
+    }
+    #credits-container dt {
+      font-style: italic;
+    }
+    #credits-container dd {
+      margin-left: 1rem;
     }
     calcite-rating {
       margin-top: 0.25rem;
@@ -92,16 +113,13 @@
     #resultsDiv {
       overflow: auto;
     }
-    .esri-feature__last-edited-info {
-      display: none;
-    }
   </style>
 
   <body>
 
     <calcite-shell content-behind class="calcite-mode-dark">
       <h2 id="header-title" slot="header">
-        Dragon Map
+        <span style="font-style: italic;">The Dragon Map: An Inclusive Collection of Draconic Creatures</span>
       </h2>
       <!-- Calcite Shell Panel to organize UI -->
       <calcite-shell-panel slot="panel-start" display-mode="float">
@@ -149,44 +167,51 @@
         <calcite-panel height-scale="l" heading="Layer Information" data-panel-id="layersReference" hidden>
           <div id="layer-reference-container">
             <div id="side-panel-information">
-              <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Reptile Richness and Rarity</h4>
-              <p>This layer showsbiodiversity of animal and plant groups expressed as percentile rank, from the Map of Life Living Atlas Publisher. <i>Species richness</i> is the number of species ranges estimated to occur in each grid cell. <i>Species rarity</i> is the average range-restrictedness of all species expected to occuur in each cell. </p>
+              <h4 style="margin-top:0;"><calcite-icon scale="m" icon="layer"></calcite-icon>Reptile Richness and Rarity</h4>
+              <p>This layer showsbiodiversity of reptile species expressed as percentile rank, from the Map of Life Living Atlas Publisher. <i>Species richness</i> is the number of species ranges estimated to occur in each grid cell. <i>Species rarity</i> is the average range-restrictedness of all species expected to occuur in each cell.<br>Loading is slow due to data processing.</p>
               <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Amphibian Richness and Rarity</h4>
-              <p>The same as above but with amphibians.</p>
+              <p>The same as above but with amphibians, also from the same source data.</p>
               <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Number of Terrestrial Lizard and Snake Species</h4>
-              <p>Data from the WWF WildFinder database for species occurrences by ecoregion.</p>
+              <p>Data from the WWF WildFinder database for species occurrences by ecoregion. Data shown is from the following taxanomic groups: Sauria, Serpentes, Amphisbaenia, and Rhynchocephalia.</p>
             </div>
           </div>
         </calcite-panel>
       
         <!-- Add a Dragon panel -->
-        <calcite-panel height-scale="l" heading="Add a Dragon" data-panel-id="addDragon" hidden>
-          <div id="addDragon-container">
-            Submission Guidelines:</br></br>
-            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123. The quality of the database depends on the consistency of submissions. Please follow the guided survey with a submission.</br></br>
-            <a href="https://arcg.is/1reu9q" target="blank">Add a Dragon Survey</a>
+      <calcite-panel height-scale="l" heading="Add a Dragon" data-panel-id="addDragon" hidden>
+        <div id="addDragon-container">
+          <h4 style="margin-top:0;">Submission Guidelines:</h4>
+          <p>Click the button below to add a dragon to the dragon database. This will open a new page with Survey123. Please follow the guided survey with a submission.</p>
+          <div style="display:flex; margin: 1rem 1rem;">
+            <calcite-button href="https://arcg.is/1reu9q" icon-end="launch" label="Open Dragon Database Survey123 Link" target="_blank" style="margin:auto;"> Open Dragon Database Survey
+            </calcite-button>
           </div>
-        </calcite-panel>
+        </div>
+      </calcite-panel>
 
         <!-- Credit panel -->
         <calcite-panel height-scale="l" heading="Credits" data-panel-id="credits" hidden>
           <div id="credits-container">
             Created by Jessica Steslow for the University of Wisconsin-Madison Geography 576 midterm project, October 2023
+            <p>Made with ArcGIS JavaScript</p>
             <p>Layer Credits:</p>
             <dl>
-              <dt>Terrestrial Species Richness and Rarity</dt>
-              <dd>- Feature layer by Map of Life Living Atlas Publisher</dd>
-              <dd>- Link to ArcGIS overview page: 
-                <a href="https://www.arcgis.com/home/item.html?id=08fbd2c0db94442db4e4835092dcc01b#overview" target="blank">link</a>
-                </dd>
-              <dt>Number of Terrestrial Lizard and Snake Species</dt>
-              <dd>- Link to ArcGIS overview page: 
-                <a href="https://www.arcgis.com/home/item.html?id=4d8d7703ec5e4337a0ac1a20edb6a5d3" target="blank">link</a>
-                </dd>
+              <dt>Species Richness and Rarity</dt>
+              <dd>- Used for Reptile and Amphibian layers</dd>
+              <dd>- Feature layer by Map of Life</dd>
+              <dd>- ArcGIS layer 
+                <a href="https://www.arcgis.com/home/item.html?id=08fbd2c0db94442db4e4835092dcc01b#overview" target="_blank">overview page </a>
+              </dd>
+              <dt>No. of Terrestrial Lizard and Snake Species</dt>
+              <dd>- By tboucher on The Living Atlas</dd>
+              <dd>- Also available on Data Basin</dd>
+              <dd>- ArcGIS layer 
+                <a href="https://www.arcgis.com/home/item.html?id=4d8d7703ec5e4337a0ac1a20edb6a5d3" target="_blank">overview page </a>
+              </dd>
               <dt>Basemap</dt>
-              <dd>- "Geogrgian" Basemap created by John Nelson</dd>
-              <dd>- Link to ArcGIS overview page: 
-                <a href="https://www.arcgis.com/home/item.html?id=4d8d7703ec5e4337a0ac1a20edb6a5d3" target="blank">link</a>
+              <dd>- "Geogrgian" created by John Nelson</dd>
+              <dd>- ArcGIS layer  
+                <a href="https://www.arcgis.com/home/item.html?id=83ebb96f9f99446085888bb5341c5afd" target="_blank">overview page </a>
               </dd>
             </dl> 
           </div>
@@ -239,7 +264,7 @@
               <div class="attributeLabel" style="margin-left: 4px">Name</div>
               <div><calcite-input-text id="nameSelection" placeholder="(optional)"></calcite-input-text></div>
             </div>
-            <div style="max-width: 100%; display: flex; flex-direction: row; margin: 4px 0;">
+            <div style="max-width: 85%; display: flex; flex-direction: row; margin: auto;">
               <calcite-button id="query-dragons" width="half" appearance="solid" alignment="center" scale="s">
                 Query Dragons
               </calcite-button>
@@ -265,7 +290,8 @@
     require([
       "esri/config",
       "esri/Basemap",
-      "esri/Map",   
+      "esri/Map",
+      "esri/PopupTemplate",
       "esri/views/MapView",
       "esri/layers/FeatureLayer",
       "esri/widgets/Expand",
@@ -274,7 +300,7 @@
       "esri/widgets/Search",
       "esri/smartMapping/renderers/relationship",
       "esri/smartMapping/symbology/relationship"
-    ], (esriConfig, Basemap, Map, MapView, FeatureLayer, Expand, LayerList, Legend, Search, relationshipRendererCreator, relationshipSchemes) => 
+    ], (esriConfig, Basemap, Map, PopupTemplate, MapView, FeatureLayer, Expand, LayerList, Legend, Search, relationshipRendererCreator, relationshipSchemes) => 
     
     (async () => {
       
@@ -320,7 +346,6 @@
         popupTemplate: createPopupTemplate()
       });
 
-
       const view = new MapView({
         map,
         container: "viewDiv",
@@ -337,7 +362,6 @@
         geometryType: "polygon",
         name: "Blueberry Parfait"
       });
-
       
       const amphibianRichnessAndRarityParams = {
         layer: amphibianRichnessAndRarityLayer,
@@ -465,8 +489,6 @@
           const clearQueryButton = document.getElementById("clear-query");
           const queryDragonsButton = document.getElementById("query-dragons");
       
-
-
           // This function runs when user clicks on query dragons button
           document.getElementById("query-dragons").addEventListener("click", async () => {
             clearQueryButton.appearance = "outline";
@@ -476,7 +498,7 @@
             // Very sensitive to value of calcite items in DOM
             
             let whereClause = (categorySelection.value == "Any") ? 
-                "category LIKE '%'": "category = '" + categorySelection.value + "'";
+              "category LIKE '%'": "category = '" + categorySelection.value + "'";
             
             whereClause = (wingSelection.value == "Any") ? 
               whereClause: whereClause + " AND " + "wings = '" + wingSelection.value + "'";
@@ -500,23 +522,24 @@
               orderByFields: ["name"]
             };
             
-
             const results = await dragonLayer.queryFeatures(query);
 
             document.getElementById("resultsDiv").style.display = "block";
             document.getElementById("resultsHeading").innerHTML = `Results: ${results.features.length} dragons`;
             document.getElementById("results").innerHTML = "";
 
+            // creates a pick-list-item for each result of the query and places in the results panel
             graphics = results.features;
             graphics.forEach((result, index) => {
               const attributes = result.attributes;
               const item = document.createElement("calcite-pick-list-item");
               item.setAttribute("label", attributes.name);
               item.setAttribute("value", index);
-
               item.setAttribute("description", attributes.description);
+              
               item.addEventListener("click", dragonResultClickHandler);
               document.getElementById("results").appendChild(item);
+              
             });
 
             // set query for the queryObjectIds.
@@ -528,13 +551,12 @@
 
           });
 
-          // this function runs when user clicks on the dragon
-          // in the list shown on the right side of the app
+          // this function runs when user clicks on a generated dragon item in the results section
           function dragonResultClickHandler(event) {
             const target = event.target;
             const resultId = target.getAttribute("value");
 
-            // get the graphic corresponding to the clicked zip code
+            // get the graphic corresponding to the clicked ID
             const result = resultId && graphics && graphics[parseInt(resultId)];
 
             if (result) {
@@ -542,12 +564,23 @@
                 features: [result],
                 location: result.geometry
               });
+              view.goTo({
+                center: result.geometry
+              });
             }
           }
 
+          // this function runs when the user clicks clear query
+          // the attribute values reset to default and the results clears
           clearQueryButton.addEventListener("click", () => {
             clearQueryButton.appearance = "solid";
             queryDragonsButton.appearance = "outline";
+            categorySelection.value = "Any";
+            wingSelection.value = "Any";
+            headSelection.value = "Any";
+            limbSelection.value = "Any";
+            nameSelection.value = "";
+            
             dragonLayerView.filter = null;
             view.closePopup();
             document.getElementById("resultsHeading").innerHTML = `Results`;
@@ -558,38 +591,33 @@
              let dragonRenderer = {
               type: "unique-value", // autocasts as new UniqueValueRenderer()
               field: "category",
-              //defaultSymbol: { type: "simple-marker"}, // autocasts as new SimpleMarkerSymbol()
+              //defaultSymbol: { type: "simple-marker"},
               uniqueValueInfos: [{
                 value: "Mythology",
                 symbol: {
-                  type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-                  color: [ 255, 128, 0, 0.8 ],
-                  outline: {  // autocasts as new SimpleLineSymbol()
-                    width: 1,
-                    color: "black"
-                  }
+                  type: "picture-marker",
+                  url: "https://steslowj.github.io/geog576_midterm/noun-dragon.png",
+                  width: "32px",
+                  height: "32px",
                 }
               }, {
                 value: "Zoology",
                 symbol: {
-                  type: "simple-marker",  // autocasts as new SimpleFillSymbol()
-                  color: [ 128, 255, 0, 0.8 ],
-                  outline: {  // autocasts as new SimpleLineSymbol()
-                    width: 1,
-                    color: "black"
-                  }
+                  type: "picture-marker",
+                  url: "https://steslowj.github.io/geog576_midterm/noun-lizard.png",
+                  width: "32px",
+                  height: "32px"
                 }
               }]
             };
-
             return dragonRenderer;
           }
-
+      
           function createPopupTemplate() {
             return {
               title: "{name}",
-              content: [
-                {
+              lastEditInfoEnabled: "false",
+              content: [{
                   type: "fields",
                   fieldInfos: [
                     {
@@ -615,10 +643,9 @@
                   ]
                 }
               ]
+              
             };
           }
-
-      
     })());
   </script>
 </html>
