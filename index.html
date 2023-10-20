@@ -129,33 +129,27 @@
           <div id="information-container">
             This map is meant to be an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
           <p>Use the tools on the left side panel to interact with the data on the map.</p>
-          <div id="side-panel-information">
-            <h4><calcite-icon icon="data-magnifying-glass"></calcite-icon> Search the Database</h4>
-            <p>Select attributes related to dragons to search the database. Results given will correspond to points on the map.</p>
-            <h4><calcite-icon icon="layers"></calcite-icon> Toggle Layers</h4>
-            <p>Explore layers related to reptile diversity!</p>
-            <h4><calcite-icon icon="layers-reference"></calcite-icon>Layer Information</h4>
-            <p>Info on the reptile diversity layers.</p>
-            <h4><calcite-icon icon="plus-circle"></calcite-icon> Add a Dragon</h4>
-            <p>This project is made better by including knowledge from multiple backgrounds! Check this tool to read about how to add a new dragon into the database.</p>
-          </div>
-          <!-- <calcite-block collapsible heading="Search the Database">
-            Text text
-          </calcite-block>
-          <calcite-block collapsible heading="View Layers">
-            <div>div in a block</div>
-          </calcite-block>
-          <calcite-block collapsible heading="Add a Dragon"></calcite-block>   -->
+            <div id="side-panel-information">
+              <h4><calcite-icon icon="data-magnifying-glass"></calcite-icon> Search the Database</h4>
+              <p>Select attributes related to dragons to search the database. Results given will correspond to points on the map.</p>
+              <h4><calcite-icon icon="layers"></calcite-icon> Toggle Layers</h4>
+              <p>Explore layers related to reptile diversity!</p>
+              <h4><calcite-icon icon="layers-reference"></calcite-icon>Layer Information</h4>
+              <p>Info on the reptile diversity layers.</p>
+              <h4><calcite-icon icon="plus-circle"></calcite-icon> Add a Dragon</h4>
+              <p>This project is made better by including knowledge from multiple backgrounds! Check this tool to read about how to add a new dragon into the database.</p>
+            </div>
           </div>
         </calcite-panel>
       
         <!-- Layer Info panel -->
         <calcite-panel height-scale="l" heading="Layer Information" data-panel-id="layersReference" hidden>
           <div id="layer-reference-container">
-            This map is meant to be an inclusive collection of dragons from many genres: folklore, urban legends, history, biology. Click on the points to learn more about different dragons!</br>
             <div id="side-panel-information">
-              <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Terrestrial Species Rarity and Richness</h4>
-              <p>A measure of biodiversity of animal and plant groups expressed as percentile rank, from the Map of Life Living Atlas Publisher.</p>
+              <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Reptile Richness and Rarity</h4>
+              <p>This layer showsbiodiversity of animal and plant groups expressed as percentile rank, from the Map of Life Living Atlas Publisher. <i>Species richness</i> is the number of species ranges estimated to occur in each grid cell. <i>Species rarity</i> is the average range-restrictedness of all species expected to occuur in each cell. </p>
+              <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Amphibian Richness and Rarity</h4>
+              <p>The same as above but with amphibians.</p>
               <h4><calcite-icon scale="m" icon="layer"></calcite-icon>Number of Terrestrial Lizard and Snake Species</h4>
               <p>Data from the WWF WildFinder database for species occurrences by ecoregion.</p>
             </div>
@@ -167,15 +161,31 @@
           <div id="addDragon-container">
             Submission Guidelines:</br></br>
             Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123. The quality of the database depends on the consistency of submissions. Please follow the guided survey with a submission.</br></br>
-            <a href="https://arcg.is/1reu9q" target="blank">Add a Dragon Survey<a>
+            <a href="https://arcg.is/1reu9q" target="blank">Add a Dragon Survey</a>
           </div>
         </calcite-panel>
 
         <!-- Credit panel -->
         <calcite-panel height-scale="l" heading="Credits" data-panel-id="credits" hidden>
           <div id="credits-container">
-            Use the tools on the left to explore the dragon dataset.</br></br>
-            Click the Edit button to add a dragon to the dragon dataset. This will open a new page with Survey123.</br></br>
+            Created by Jessica Steslow for the University of Wisconsin-Madison Geography 576 midterm project, October 2023
+            <p>Layer Credits:</p>
+            <dl>
+              <dt>Terrestrial Species Richness and Rarity</dt>
+              <dd>- Feature layer by Map of Life Living Atlas Publisher</dd>
+              <dd>- Link to ArcGIS overview page: 
+                <a href="https://www.arcgis.com/home/item.html?id=08fbd2c0db94442db4e4835092dcc01b#overview" target="blank">link</a>
+                </dd>
+              <dt>Number of Terrestrial Lizard and Snake Species</dt>
+              <dd>- Link to ArcGIS overview page: 
+                <a href="https://www.arcgis.com/home/item.html?id=4d8d7703ec5e4337a0ac1a20edb6a5d3" target="blank">link</a>
+                </dd>
+              <dt>Basemap</dt>
+              <dd>- "Geogrgian" Basemap created by John Nelson</dd>
+              <dd>- Link to ArcGIS overview page: 
+                <a href="https://www.arcgis.com/home/item.html?id=4d8d7703ec5e4337a0ac1a20edb6a5d3" target="blank">link</a>
+              </dd>
+            </dl> 
           </div>
         </calcite-panel>
 
@@ -259,8 +269,9 @@
       "esri/widgets/LayerList",
       "esri/widgets/Legend",
       "esri/widgets/Search",
-      "esri/widgets/Slider"
-    ], (esriConfig, Basemap, Map, MapView, FeatureLayer, Expand, LayerList, Legend, Search, Slider) => 
+      "esri/smartMapping/renderers/relationship",
+      "esri/smartMapping/symbology/relationship"
+    ], (esriConfig, Basemap, Map, MapView, FeatureLayer, Expand, LayerList, Legend, Search, relationshipRendererCreator, relationshipSchemes) => 
     
     (async () => {
       
@@ -284,25 +295,19 @@
         visible: false
       });
 
-      const speciesRarityAndRichnessLayer = new FeatureLayer({
+      const amphibianRichnessAndRarityLayer = new FeatureLayer({
         url: "https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/GlobalTerrRaR_025deg/FeatureServer",
-        outFields: ["*"],
-        title: "Terrestrial Species Rarity and Richness",
+        outFields: ["Rich_amph", "Rar_amph"],
+        title: "Amphipian Richness and Rarity",
         visible: false
       });
-
-      // Test Feature Layer to test layout and query in this code
-      const dragonFeatureLayerTester = new FeatureLayer({
-        url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/DragonDraft/FeatureServer",
-        outFields: ["*"],
-        title: "Dragons",
-        renderer: await setRenderer(),
-        popupTemplate: createPopupTemplate()
+      
+      const reptileRichnessAndRarityLayer = new FeatureLayer({
+        url: "https://services9.arcgis.com/IkktFdUAcY3WrH25/arcgis/rest/services/GlobalTerrRaR_025deg/FeatureServer",
+        outFields: ["Rich_rept", "Rar_rept"],
+        title: "Reptile Richness and Rarity",
+        visible: false
       });
-
-      map.add(numberTerrestrialLayer);
-      map.add(speciesRarityAndRichnessLayer);
-      //map.add(dragonFeatureLayerTester);
       
       const dragonLayer = new FeatureLayer({
         url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/survey123_858ef0ef96d24c05973f1b8c29755f2b_results/FeatureServer",
@@ -311,7 +316,7 @@
         renderer: await setRenderer(),
         popupTemplate: createPopupTemplate()
       });
-      map.add(dragonLayer);
+
 
       const view = new MapView({
         map,
@@ -322,6 +327,55 @@
           left: 49
         }
       });
+      
+      // Returns the Blueberry Parfait scheme
+      let blueberryScheme = relationshipSchemes.getSchemeByName({
+        basemap: map.basemap,
+        geometryType: "polygon",
+        name: "Blueberry Parfait"
+      });
+
+      
+      const amphibianRichnessAndRarityParams = {
+        layer: amphibianRichnessAndRarityLayer,
+        view: view,
+        field1: {
+          field: "Rich_amph"
+        },
+        field2: {
+          field: "Rar_amph"
+        },
+        defaultSymbolEnabled: false,
+        relationshipScheme: blueberryScheme
+      }
+      
+      relationshipRendererCreator.createRenderer(amphibianRichnessAndRarityParams)
+        .then(function(response){
+          amphibianRichnessAndRarityLayer.renderer = response.renderer;
+      });
+      
+      const reptileRichnessAndRarityParams = {
+        layer: reptileRichnessAndRarityLayer,
+        view: view,
+        field1: {
+          field: "Rich_rept"
+        },
+        field2: {
+          field: "Rar_rept"
+        },
+        defaultSymbolEnabled: false,
+        relationshipScheme: blueberryScheme
+      }
+
+      relationshipRendererCreator.createRenderer(reptileRichnessAndRarityParams)
+        .then(function(response){
+        reptileRichnessAndRarityLayer.renderer = response.renderer;
+      });
+      
+      map.add(numberTerrestrialLayer);
+      map.add(amphibianRichnessAndRarityLayer);
+      map.add(reptileRichnessAndRarityLayer);
+      map.add(dragonLayer);
 
       const searchWidget = new Search({
         view: view
@@ -353,44 +407,7 @@
               open: true
             };
           }
-          
-          // Adds a slider for updating a group layer's opacity
-          if(item.title === "Terrestrial Species Rarity and Richness" || item.title === "Number of Terrestrial Lizard and Snake Species"){
-            const slider = new Slider({
-              min: 0,
-              max: 1,
-              precision: 2,
-              values: [ 1 ],
-              visibleElements: {
-                labels: true,
-                rangeLabels: true
-              }
-            });
-
-            item.panel = {
-              content: slider,
-              className: "esri-icon-sliders-horizontal",
-              title: "Change layer opacity"
-            }
-
-            slider.on("thumb-drag", (event) => {
-              const { value } = event;
-              item.layer.opacity = value;
-            })
-          }
-        
         } // end of listItemCreatedFunction
-      });
-
-      layerList.on("trigger-action", (event) => {
-        const id = event.action.id;
-        if (id === "info-rarity-and-richness") {
-          const popup = document.getElementById("popup-rarity-and-richness");
-          popup.classList.toggle("show");
-        } else if (id === "info-number-of-species") {
-           const popup = document.getElementById("popup-number-of-species");
-          popup.classList.toggle("show");         
-        }
       });
 
       // function to manage calcite items after view has finished loading
